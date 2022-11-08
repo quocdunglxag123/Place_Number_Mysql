@@ -3,6 +3,10 @@ import cv2
 import numpy as np
 from lib_detection import load_model, detect_lp, im2single
 from pathlib import Path
+import mysql.connector
+from datetime import date
+import glob
+import os.path
 
 # Ham sap xep contour tu trai sang phai
 def sort_contours(cnts):
@@ -27,10 +31,8 @@ def fine_tune(lp):
 
 # Đường dẫn ảnh Test
 #**************Edit********************
-import glob
-import os.path
 
-folder_path = r'C:\Users\lyquo\Pictures\Camera Roll'
+folder_path = r'C:\Users\quocd\OneDrive\Pictures\Camera Roll'
 file_type = r'\*jpg'
 files = glob.glob(folder_path + file_type)
 if not files:
@@ -46,7 +48,9 @@ wpod_net_path = "wpod-net_update1.json"
 wpod_net = load_model(wpod_net_path)
 
 # Đọc file ảnh đầu vào
-Ivehicle = cv2.imread(img_path)
+img = cv2.imread(img_path)
+Ivehicle = cv2.flip(img, 1)
+#Ivehicle = cv2.imread(img_path)
 
 # Kích thước lớn nhất và nhỏ nhất của 1 chiều ảnh
 Dmax = 608
@@ -124,8 +128,6 @@ if (len(LpImg)):
 
     #**************EDIT***********
     # Connect to sql_server
-    import mysql.connector
-    from datetime import date
     mydb = mysql.connector.connect(
       host = "localhost",
       user = "root",
@@ -154,10 +156,6 @@ if (len(LpImg)):
         mycursorInsert.execute(queryInsert, valInsert)
         mydb.commit()
         print(mycursorInsert.rowcount, "details inserted")
-        #Change Name Image
-        oldpath = max_file
-        newpath = Path(r'C:\Users\lyquo\Pictures\Camera Roll', plate_info + '.jpg')
-        os.rename(oldpath, newpath) 
     else:
         for x in myresultGet:
             dateInDB= x[2]
@@ -181,9 +179,14 @@ if (len(LpImg)):
         
         # disconnecting from server
         mydb.close()
+       
     
     #**************END**********
-
+#Delete Image
+if os.path.exists(img_path):
+    os.remove(img_path)
+else:
+    print("The file does not exist")
 cv2.destroyAllWindows()
 """
     price_numberplate= 'Bien So Xe: '+ plate_info + ' Gui Xe Trong: ' + str(datestay.days) + ' Ngay ' + ' Gia Tien: ' + str(price) 

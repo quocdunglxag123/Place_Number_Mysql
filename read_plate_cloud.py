@@ -127,14 +127,14 @@ if (len(LpImg)):
     #**************EDIT***********
     # Connect to sql_server
     mydb = mysql.connector.connect(
-      host = "localhost",
-      user = "root",
+      host = "readplateproject.ce2ywr7ubi0e.us-east-1.rds.amazonaws.com",
+      user = "quocdung",
       password = "quocdung",
       database = "numberplate"
     ) 
     # selecting Data
     mycursorGet = mydb.cursor()
-    queryGet = "SELECT * FROM Infor_Vehicel_in where number_plate= %s"
+    queryGet = "SELECT * FROM infor_vehicel_in where number_plate= %s"
     valGet = (plate_info,)
     mycursorGet.execute(queryGet,valGet)
     myresultGet = mycursorGet.fetchall()
@@ -149,7 +149,7 @@ if (len(LpImg)):
         mycursorInsert = mydb.cursor()
         datein= date.today()
         formatted_date = datein.strftime('%Y-%m-%d')
-        queryInsert = "INSERT INTO Infor_Vehicel_in (number_plate, time_in) VALUES (%s, %s)"
+        queryInsert = "INSERT INTO infor_vehicel_in (number_plate, time_in) VALUES (%s, %s)"
         valInsert = (plate_info, formatted_date)
         mycursorInsert.execute(queryInsert, valInsert)
         mydb.commit()
@@ -170,7 +170,7 @@ if (len(LpImg)):
         cv2.waitKey()
         #Delete Vehicel Check Out
         mycursorDelete = mydb.cursor()
-        queryDelete = "DELETE FROM Infor_Vehicel_in where number_plate= %s"
+        queryDelete = "DELETE FROM infor_vehicel_in where number_plate= %s"
         valDelete = (plate_info,)
         mycursorDelete.execute(queryDelete,valDelete)
         mydb.commit() 

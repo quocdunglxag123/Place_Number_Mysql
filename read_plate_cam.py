@@ -2,7 +2,11 @@
 import cv2
 import numpy as np
 from lib_detection import load_model, detect_lp, im2single
-
+from pathlib import Path
+import mysql.connector
+from datetime import date
+import glob
+import os.path
 
 # Ham sap xep contour tu trai sang phai
 def sort_contours(cnts):
@@ -28,8 +32,16 @@ def fine_tune(lp):
 # Đường dẫn ảnh Test
 #**************Edit********************
 
+folder_path = r'C:\Users\quocd\OneDrive\Pictures\Camera Roll'
+file_type = r'\*jpg'
+files = glob.glob(folder_path + file_type)
+if not files:
+    print('Folder Empty!')
+else:
+    max_file = max(files, key=os.path.getctime)
+    print(max_file) 
 #**************End*********************
-img_path = "test/test2.jpg"
+img_path = max_file
 
 # Load model LP detection
 wpod_net_path = "wpod-net_update1.json"
@@ -114,8 +126,6 @@ if (len(LpImg)):
 
     #**************EDIT***********
     # Connect to sql_server
-    import mysql.connector
-    from datetime import date
     mydb = mysql.connector.connect(
       host = "localhost",
       user = "root",
@@ -167,9 +177,14 @@ if (len(LpImg)):
         
         # disconnecting from server
         mydb.close()
+       
     
     #**************END**********
-
+#Delete Image
+if os.path.exists(img_path):
+    os.remove(img_path)
+else:
+    print("The file does not exist")
 cv2.destroyAllWindows()
 """
     price_numberplate= 'Bien So Xe: '+ plate_info + ' Gui Xe Trong: ' + str(datestay.days) + ' Ngay ' + ' Gia Tien: ' + str(price) 
